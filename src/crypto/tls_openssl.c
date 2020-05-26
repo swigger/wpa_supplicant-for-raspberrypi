@@ -1035,6 +1035,13 @@ void * tls_init(const struct tls_config *conf)
 		os_free(data);
 		return NULL;
 	}
+
+#ifndef EAP_SERVER_TLS
+	/* Enable TLSv1.0 by default to allow connecting to legacy
+	 * networks since Debian OpenSSL is set to minimum TLSv1.2 and SECLEVEL=2. */
+	SSL_CTX_set_min_proto_version(ssl, TLS1_VERSION);
+#endif
+
 	data->ssl = ssl;
 	if (conf) {
 		data->tls_session_lifetime = conf->tls_session_lifetime;
